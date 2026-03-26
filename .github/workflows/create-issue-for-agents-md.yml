@@ -3,6 +3,9 @@ name: Create Issue for copilot/add-agents-md-file changes
 on:
   workflow_dispatch:
   push:
+    # Trigger from the meta-task branch so this workflow can be reviewed and
+    # approved before merging. The issue it creates describes the changes in
+    # the companion branch copilot/add-agents-md-file (PR #1).
     branches:
       - copilot/add-agents-md-file-again
 
@@ -129,22 +132,25 @@ jobs:
       - name: Resolve issue number
         id: resolve-issue
         uses: actions/github-script@v7
+        env:
+          NEW_ISSUE_NUM: ${{ steps.create-issue.outputs.issue_number }}
+          EXISTING_ISSUE_NUM: ${{ steps.check-issue.outputs.issue_number }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const newNum = '${{ steps.create-issue.outputs.issue_number }}';
-            const existingNum = '${{ steps.check-issue.outputs.issue_number }}';
-            const number = newNum || existingNum;
+            const number = process.env.NEW_ISSUE_NUM || process.env.EXISTING_ISSUE_NUM || '';
             core.setOutput('issue_number', number);
             console.log(`Using issue #${number}`);
 
       - name: Add issue to org project 5
         continue-on-error: true
         uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve-issue.outputs.issue_number }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = parseInt('${{ steps.resolve-issue.outputs.issue_number }}');
+            const issueNumber = parseInt(process.env.ISSUE_NUMBER || '', 10);
             if (!issueNumber) {
               console.log('No issue number, skipping project add');
               return;
@@ -181,10 +187,12 @@ jobs:
 
       - name: Update PR #1 to reference the issue
         uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.resolve-issue.outputs.issue_number }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = '${{ steps.resolve-issue.outputs.issue_number }}';
+            const issueNumber = process.env.ISSUE_NUMBER || '';
             if (!issueNumber) {
               console.log('No issue number, skipping PR update');
               return;
