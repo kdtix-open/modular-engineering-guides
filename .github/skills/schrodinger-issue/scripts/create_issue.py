@@ -21,9 +21,10 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 
-def run(cmd, check=True, capture=True):
+def run(cmd: str, check: bool = True, capture: bool = True) -> str:
     """Run a shell command and return stdout as a string."""
     result = subprocess.run(
         cmd, shell=True, text=True,
@@ -38,7 +39,7 @@ def run(cmd, check=True, capture=True):
     return result.stdout.strip() if capture else ""
 
 
-def collect_context(num_commits=10):
+def collect_context(num_commits: int = 10) -> dict[str, Any]:
     """Collect git context: branch, diffs, commits, changed files."""
     branch = run("git rev-parse --abbrev-ref HEAD")
     staged_diff = run("git diff --cached", check=False)
@@ -77,7 +78,12 @@ def collect_context(num_commits=10):
     }
 
 
-def create_issue(title, body_file, labels, repo=None):
+def create_issue(
+    title: str,
+    body_file: str,
+    labels: list[str],
+    repo: str | None = None,
+) -> tuple[str, str]:
     """Create a GitHub issue using gh CLI."""
     # Verify gh auth
     auth_check = subprocess.run(
@@ -143,7 +149,7 @@ def create_issue(title, body_file, labels, repo=None):
     return issue_url, issue_number
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Schrödinger Issue — create a GitHub issue from git changes."
     )
