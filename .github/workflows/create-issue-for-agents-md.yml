@@ -1,13 +1,10 @@
 name: Create Issue for copilot/add-agents-md-file changes
 
 on:
+  # Run manually from the Actions tab (https://github.com/kdtix-open/modular-engineering-guides/actions)
+  # after this PR is merged. When triggered from the default branch the
+  # GITHUB_TOKEN has full write access without requiring extra approval.
   workflow_dispatch:
-  push:
-    # Trigger from the meta-task branch so this workflow can be reviewed and
-    # approved before merging. The issue it creates describes the changes in
-    # the companion branch copilot/add-agents-md-file (PR #1).
-    branches:
-      - copilot/add-agents-md-file-again
 
 permissions:
   issues: write
