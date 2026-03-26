@@ -538,7 +538,7 @@ except Exception as e:
 - [ ] Code formatted (`ruff format`, `prettier`)
 - [ ] Linter passes (`ruff check`, `eslint`)
 - [ ] Naming conventions followed
-- [ ] No debug code (`print()`, `console.log()`)
+- [ ] No ad-hoc debug output (`print()`, `console.log()`) — use the structured logger instead (see [Observability & Logging Standards](observability-and-logging.md))
 
 **Type Safety**:
 - [ ] Type hints on all functions

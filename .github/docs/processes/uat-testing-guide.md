@@ -77,7 +77,7 @@
 - [ ] **Test data prepared** (realistic but safe)
 - [ ] **Credentials configured** (test accounts)
 - [ ] **Network access** (if external APIs)
-- [ ] **Logging enabled** (for debugging)
+- [ ] **Logging configured** — run with `--verbose 3 --debug 3` for full trace output; log files are captured automatically in `logs/` (see [Observability & Logging Standards](../standards/observability-and-logging.md))
 
 ### Step 3: Execute Scenarios
 
@@ -439,6 +439,7 @@
 - [ ] **Celebrate bugs found** (finding bugs = winning 🎉)
 - [ ] **Log bugs immediately** (don't defer)
 - [ ] **Take notes** (observations, timing, issues)
+- [ ] **Collect log artifacts** — attach `logs/<service>-<date>.log` and `logs/<service>-trace-<date>.log` to bug reports
 
 ### After UAT
 
