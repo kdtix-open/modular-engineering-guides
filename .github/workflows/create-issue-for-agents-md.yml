@@ -1,0 +1,212 @@
+name: Create Issue for copilot/add-agents-md-file changes
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - copilot/add-agents-md-file-again
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  create-issue-and-link-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      issue_number: ${{ steps.resolve-issue.outputs.issue_number }}
+
+    steps:
+      - name: Check if issue already exists
+        id: check-issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            const existing = issues.find(i =>
+              i.title === 'feat: Add GitHub Copilot layered instruction files and guide library bootstrap'
+            );
+            if (existing) {
+              console.log(`Issue already exists: #${existing.number}`);
+              core.setOutput('issue_number', String(existing.number));
+              core.setOutput('already_exists', 'true');
+            } else {
+              core.setOutput('already_exists', 'false');
+            }
+
+      - name: Create label if needed
+        if: steps.check-issue.outputs.already_exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'copilot-instructions',
+                color: '0075ca',
+                description: 'GitHub Copilot custom instruction files'
+              });
+            } catch (e) {
+              if (e.status !== 422) throw e; // 422 = label already exists
+            }
+
+      - name: Create issue describing changes in copilot/add-agents-md-file
+        id: create-issue
+        if: steps.check-issue.outputs.already_exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const body = [
+              '## Summary',
+              '',
+              'This issue tracks the addition of GitHub Copilot layered instruction files and a project README to the `modular-engineering-guides` repository.',
+              'These changes adapt the existing Codex-style guide library for GitHub Copilot\'s four-layer custom instruction system.',
+              '',
+              '## Branch',
+              '',
+              '`copilot/add-agents-md-file` → PR #1',
+              '',
+              '## Changes Made',
+              '',
+              '### New files added (760 lines across 6 files)',
+              '',
+              '| File | Purpose |',
+              '|------|---------|',
+              '| `AGENTS.md` | GitHub Copilot Coding Agent entrypoint — guide library detection/bootstrap, Phase 7 pre-commit checklist, bug discovery protocol, guide library reference table |',
+              '| `README.md` | Repository documentation — explains the four Copilot instruction layers, repo structure, and adoption steps |',
+              '| `.github/copilot-instructions.md` | Repo-wide Copilot constitution template — full 8-principle constitution with dual detection paths (shell + chat/no-shell) |',
+              '| `.github/docs/examples/constitution-template.md` | Standalone constitution template for easy copy-paste into adopting repos |',
+              '| `.github/instructions/testing.instructions.md` | Path-scoped (`**/*.test.*`, `**/*.spec.*`, …) testing standards |',
+              '| `.github/instructions/security.instructions.md` | Path-scoped (`**/*`) non-negotiable security standards |',
+              '',
+              '## Four-Layer Copilot Instruction Coverage',
+              '',
+              '| Layer | File / Location | Scope |',
+              '|-------|----------------|-------|',
+              '| Org-wide | Org Settings → Copilot → Custom Instructions | All repos in org |',
+              '| Repo-wide | `.github/copilot-instructions.md` | This repo |',
+              '| Coding Agent | `AGENTS.md` | GitHub Copilot Coding Agent |',
+              '| Path-specific | `.github/instructions/*.instructions.md` | Per-file-pattern |',
+              '',
+              '## Manifest Updates',
+              '',
+              'Both `copilot-instructions.md` and `constitution-template.md` include two previously missing guide entries:',
+              '- `.github/docs/processes/azure-ai-agent-guide.md`',
+              '- `.github/docs/examples/confluence-attachments-success-story.md`',
+              '',
+              '## Acceptance Criteria',
+              '',
+              '- [x] `AGENTS.md` contains guide library detection block with bootstrap command',
+              '- [x] `AGENTS.md` has Phase 7 pre-commit checklist and bug discovery protocol',
+              '- [x] `.github/copilot-instructions.md` serves as repo-wide Copilot constitution template',
+              '- [x] Constitution template includes both Option A (shell) and Option B (no-shell) detection paths',
+              '- [x] Path-scoped instruction files created for testing and security standards',
+              '- [x] `README.md` documents all four Copilot instruction layers',
+              '- [x] All guide manifests updated with complete file list'
+            ].join('\n');
+
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'feat: Add GitHub Copilot layered instruction files and guide library bootstrap',
+              body: body,
+              labels: ['documentation', 'copilot-instructions']
+            });
+
+            console.log(`Created issue #${issue.number}: ${issue.html_url}`);
+            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('issue_url', issue.html_url);
+
+      - name: Resolve issue number
+        id: resolve-issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const newNum = '${{ steps.create-issue.outputs.issue_number }}';
+            const existingNum = '${{ steps.check-issue.outputs.issue_number }}';
+            const number = newNum || existingNum;
+            core.setOutput('issue_number', number);
+            console.log(`Using issue #${number}`);
+
+      - name: Add issue to org project 5
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = parseInt('${{ steps.resolve-issue.outputs.issue_number }}');
+            if (!issueNumber) {
+              console.log('No issue number, skipping project add');
+              return;
+            }
+
+            // Get the issue's global node ID
+            const { repository } = await github.graphql(`
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  issue(number: $number) { id }
+                }
+              }
+            `, { owner: context.repo.owner, repo: context.repo.repo, number: issueNumber });
+
+            // Get org project #5's node ID
+            const { organization } = await github.graphql(`
+              query($org: String!, $number: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $number) { id }
+                }
+              }
+            `, { org: context.repo.owner, number: 5 });
+
+            // Add item to project
+            const result = await github.graphql(`
+              mutation($projectId: ID!, $contentId: ID!) {
+                addProjectV2ItemById(input: { projectId: $projectId, contentId: $contentId }) {
+                  item { id }
+                }
+              }
+            `, { projectId: organization.projectV2.id, contentId: repository.issue.id });
+
+            console.log('Added to project:', JSON.stringify(result));
+
+      - name: Update PR #1 to reference the issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = '${{ steps.resolve-issue.outputs.issue_number }}';
+            if (!issueNumber) {
+              console.log('No issue number, skipping PR update');
+              return;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: 1
+            });
+
+            const closeRef = `Closes #${issueNumber}`;
+            if (pr.body && pr.body.includes(closeRef)) {
+              console.log('PR already references the issue — no update needed');
+              return;
+            }
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: 1,
+              body: closeRef + '\n\n' + (pr.body || '')
+            });
+
+            console.log(`Updated PR #1 to reference issue #${issueNumber}`);
