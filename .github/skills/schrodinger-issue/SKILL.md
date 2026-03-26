@@ -11,13 +11,16 @@ description: >
 
 # Schrödinger Issue
 
-Analyze the current git changes (diffs, staged + unstaged, recent commits, branch name) and generate a structured GitHub issue that retroactively tracks the work—making it appear as if the issue always existed.
+Analyze the current git changes (diffs, staged + unstaged, recent commits, branch
+name) and generate a structured GitHub issue that retroactively tracks the
+work—making it appear as if the issue always existed.
 
 > *"An issue that doesn't exist until observed, then appears as if it always did."*
 
 ## Prerequisites
 
-- `gh` CLI authenticated (`gh auth status`). If not, ask the user to run `gh auth login` first.
+- `gh` CLI authenticated (`gh auth status`). If not, ask the user to run
+  `gh auth login` first.
 - Must be inside a git repository.
 
 ## Workflow
@@ -89,7 +92,8 @@ python "<path-to-skill>/scripts/create_issue.py" \
   [--commits 10]
 ```
 
-The script creates the GitHub issue via `gh issue create` and prints the issue URL and number.
+The script creates the GitHub issue via `gh issue create` and prints the issue
+URL and number.
 
 ### 4. Return issue reference
 
@@ -101,6 +105,7 @@ git commit --amend -m "fix: <description> (closes #<N>)"
 
 ## Notes
 
-- `--dry-run` collects context without creating an issue—useful for reviewing what will be submitted.
+- `--dry-run` collects context without creating an issue—useful for reviewing
+  what will be submitted.
 - Labels are optional; suggest appropriate ones based on the change type.
 - If working on a PR branch, also offer to update the PR body with `Closes #N`.

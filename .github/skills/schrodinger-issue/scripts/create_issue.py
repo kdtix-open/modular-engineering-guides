@@ -4,7 +4,8 @@ Schrödinger Issue — create a GitHub issue from current git changes.
 
 Usage:
     create_issue.py --dry-run
-    create_issue.py --title "feat: my work" --body-file /tmp/body.md [--label enhancement] [--commits 10]
+    create_issue.py --title "feat: my work" --body-file /tmp/body.md \
+        [--label enhancement] [--commits 10]
 
 Options:
     --dry-run           Collect and print context JSON only; do not create issue.
@@ -45,9 +46,12 @@ def collect_context(num_commits=10):
 
     # Recent commit log with short diff stats
     log_format = "%h %s"
-    commit_log_raw = run(
-        f"git log --oneline -n {num_commits} --pretty=format:'{log_format}'", check=False
+    commit_cmd = (
+        "git log --oneline "
+        f"-n {num_commits} "
+        f"--pretty=format:'{log_format}'"
     )
+    commit_log_raw = run(commit_cmd, check=False)
     commits = []
     for line in commit_log_raw.splitlines():
         if line.strip():
@@ -56,11 +60,11 @@ def collect_context(num_commits=10):
     # Changed files (staged + unstaged + recent commits)
     staged_files = run("git diff --cached --name-status", check=False)
     unstaged_files = run("git diff --name-status", check=False)
-    recent_commit_files = run(
+    diff_range = (
         f"git diff --name-status HEAD~{num_commits} HEAD 2>/dev/null || "
-        "git diff --name-status $(git rev-list --max-parents=0 HEAD) HEAD 2>/dev/null",
-        check=False,
+        "git diff --name-status $(git rev-list --max-parents=0 HEAD) HEAD 2>/dev/null"
     )
+    recent_commit_files = run(diff_range, check=False)
 
     return {
         "branch": branch,
@@ -101,9 +105,13 @@ def create_issue(title, body_file, labels, repo=None):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
         # Labels may not exist; retry without labels
-        if labels and ("label" in result.stderr.lower() or "not found" in result.stderr.lower()):
+        label_missing = (
+            "label" in result.stderr.lower() or "not found" in result.stderr.lower()
+        )
+        if labels and label_missing:
             print(
-                f"[WARN] One or more labels not found, retrying without labels: {labels}",
+                "[WARN] One or more labels not found; retrying without labels: "
+                f"{labels}",
                 file=sys.stderr,
             )
             cmd_no_labels = (
@@ -111,13 +119,21 @@ def create_issue(title, body_file, labels, repo=None):
                 f'--title "{title}" '
                 f'--body-file "{body_path}"'
             )
-            result2 = subprocess.run(cmd_no_labels, shell=True, capture_output=True, text=True)
+            result2 = subprocess.run(
+                cmd_no_labels, shell=True, capture_output=True, text=True
+            )
             if result2.returncode != 0:
-                print(f"[ERROR] gh issue create failed:\n{result2.stderr}", file=sys.stderr)
+                print(
+                    f"[ERROR] gh issue create failed:\n{result2.stderr}",
+                    file=sys.stderr,
+                )
                 sys.exit(1)
             issue_url = result2.stdout.strip()
         else:
-            print(f"[ERROR] gh issue create failed:\n{result.stderr}", file=sys.stderr)
+            print(
+                f"[ERROR] gh issue create failed:\n{result.stderr}",
+                file=sys.stderr,
+            )
             sys.exit(1)
     else:
         issue_url = result.stdout.strip()
@@ -167,7 +183,10 @@ def main():
         print("[ERROR] --title is required unless --dry-run is set.", file=sys.stderr)
         sys.exit(1)
     if not args.body_file:
-        print("[ERROR] --body-file is required unless --dry-run is set.", file=sys.stderr)
+        print(
+            "[ERROR] --body-file is required unless --dry-run is set.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     create_issue(args.title, args.body_file, args.labels, repo=args.repo)
