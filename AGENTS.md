@@ -22,6 +22,7 @@
        .github/docs/standards/code-quality-standards.md
        .github/docs/standards/testing-requirements.md
        .github/docs/standards/pre-commit-verification.md
+       .github/docs/examples/constitution-template.md
        .github/docs/examples/confluence-attachments-success-story.md
 
      IF THE .github/docs/ FOLDER DOES NOT EXIST OR ANY FILES ARE MISSING:
