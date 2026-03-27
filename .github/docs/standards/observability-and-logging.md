@@ -46,8 +46,8 @@ DEBUG=<0-3>
 import argparse, os, logging
 
 def configure_logging(args):
-    verbose = int(args.verbose or os.environ.get("VERBOSE", 1))
-    debug   = int(args.debug   or os.environ.get("DEBUG",   0))
+    verbose = int(args.verbose if args.verbose is not None else os.environ.get("VERBOSE", 1))
+    debug   = int(args.debug   if args.debug   is not None else os.environ.get("DEBUG",   0))
 
     level_map = {0: logging.ERROR, 1: logging.INFO, 2: logging.DEBUG, 3: logging.DEBUG}
     log_level = level_map[min(verbose, 3)]
@@ -68,8 +68,11 @@ def configure_logging(args):
 **Example (Node.js/TypeScript)**:
 
 ```typescript
-const verbose = parseInt(process.argv.find(a => a.startsWith('--verbose='))?.split('=')[1]
-  ?? process.env.VERBOSE ?? '1');
+const verboseIdx = process.argv.indexOf('--verbose');
+const verbose = parseInt(
+  verboseIdx !== -1 ? process.argv[verboseIdx + 1]
+  : process.env.VERBOSE ?? '1'
+);
 
 const logger = winston.createLogger({
   level: ['error', 'info', 'debug', 'silly'][Math.min(verbose, 3)],
@@ -201,10 +204,9 @@ Add to the UAT scenario "Actual Results" section when logs are relevant:
 - `logs/myservice-trace-2026-03-25.log` (trace, --verbose 3)
 
 **Relevant log lines**:
-```
-[ERROR] myservice: Upload failed: ConnectionResetError [attempt 3/3]
-[TRACE] myservice: HTTP POST /upload → status=500, body={"error":"timeout"}
-```
+
+    [ERROR] myservice: Upload failed: ConnectionResetError [attempt 3/3]
+    [TRACE] myservice: HTTP POST /upload → status=500, body={"error":"timeout"}
 ```
 
 ---
