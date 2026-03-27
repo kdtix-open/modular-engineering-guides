@@ -96,6 +96,7 @@ GitHub Copilot supports four instruction surfaces. Use them together for maximum
 | `code-quality-standards.md` | Function size, complexity, naming |
 | `testing-requirements.md` | Coverage minimums and test quality rules |
 | `pre-commit-verification.md` | Phase 7 pre-commit checklist |
+| `observability-and-logging.md` | Log levels, CLI flags, and what to log per level |
 
 ### Examples (`.github/docs/examples/`)
 
