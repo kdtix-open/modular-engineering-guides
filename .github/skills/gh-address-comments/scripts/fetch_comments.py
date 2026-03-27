@@ -10,11 +10,13 @@ Requires:
   - current branch has an associated (open) PR
 
 Usage:
-  python fetch_comments.py > pr_comments.json
+  python fetch_comments.py                # all comments + threads
+  python fetch_comments.py --unresolved   # only unresolved review threads
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 import sys
@@ -227,9 +229,25 @@ def fetch_all(owner: str, repo: str, number: int) -> dict[str, Any]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Fetch PR comments, reviews, and review threads."
+    )
+    parser.add_argument(
+        "--unresolved",
+        action="store_true",
+        help="Only output unresolved review threads (filters out resolved ones).",
+    )
+    args = parser.parse_args()
+
     _ensure_gh_authenticated()
     owner, repo, number = get_current_pr_ref()
     result = fetch_all(owner, repo, number)
+
+    if args.unresolved:
+        result["review_threads"] = [
+            t for t in result["review_threads"] if not t.get("isResolved")
+        ]
+
     print(json.dumps(result, indent=2))
 
 
