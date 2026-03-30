@@ -13,9 +13,25 @@ Closes #N
 
 ## 🧪 Testing
 
-<!-- How was this validated? UAT scenarios run, manual checks, dry-run output, etc. -->
+<!-- For each UAT scenario, include: Goal, Prerequisites, Steps, Expected Result.
+     For bug fixes: reference the failing regression test written before the fix. -->
 
--
+| | |
+|---|---|
+| **Goal** | |
+| **Prerequisites** | |
+| **Steps** | |
+| **Expected Result** | |
+
+## 📊 Coverage Baseline
+
+<!-- Record baseline before changes, delta after. Required per Principle IV (Baseline-First). -->
+
+| | Count |
+|---|---|
+| Baseline (before) | |
+| After | |
+| Delta | |
 
 ## ⚠️ Remaining Work
 
@@ -32,7 +48,8 @@ Closes #N
 - [ ] Build passes with zero warnings
 - [ ] Full test suite: 100% pass rate, no regressions vs. recorded baseline
 - [ ] No hardcoded secrets or credentials
-- [ ] No ad-hoc debug output in production paths (use structured logger)
+- [ ] No ad-hoc debug output in production paths (use structured logger per `observability-and-logging.md`)
 - [ ] Security: safe data-access patterns, input validated at all boundaries
-- [ ] Coverage delta from baseline documented above
+- [ ] Dependencies scanned for known vulnerabilities (`pip-audit` / `npm audit` / equivalent)
+- [ ] Coverage delta documented in Coverage Baseline section above
 - [ ] Pre-commit hooks NOT bypassed (`--no-verify` not used)

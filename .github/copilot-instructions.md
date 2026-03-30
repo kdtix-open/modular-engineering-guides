@@ -175,7 +175,7 @@ A UAT scenario is only valid if it specifies: **Goal** (what is being verified),
 [ ] Build passes with zero warnings
 [ ] Full test suite: 100% pass rate, no regressions vs. recorded baseline
 [ ] No hardcoded secrets or credentials
-[ ] No debug or diagnostic code left in production paths
+[ ] No ad-hoc debug output in production paths (use structured logger — see .github/docs/standards/observability-and-logging.md)
 [ ] Security: safe data-access patterns, input validated at all boundaries
 [ ] Coverage delta from baseline documented in PR description
 [ ] Pre-commit hooks NOT bypassed (no --no-verify or equivalent)
