@@ -112,6 +112,7 @@ Before every commit, verify all items below:
 | UAT execution | `.github/docs/processes/uat-testing-guide.md` |
 | Cross-platform patterns | `.github/docs/processes/cross-platform-considerations.md` |
 | Documentation & tracking | `.github/docs/processes/documentation-tracking-guide.md` |
+| Release scaffolding | `.github/docs/processes/release-scaffolding-guide.md` |
 | UI/UX & accessibility testing | `.github/docs/processes/playwright-ui-ux-testing.md` |
 | Azure AI Agent patterns | `.github/docs/processes/azure-ai-agent-guide.md` |
 | Code & test quality | `.github/docs/standards/` (3 guides) |
