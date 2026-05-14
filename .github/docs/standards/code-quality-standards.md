@@ -522,6 +522,35 @@ except Exception as e:
     raise  # Re-raise or return error
 ```
 
+### Explicit vs Graceful Error Paths
+
+When a module offers both a **best-effort path** (background polling, cache fallback) and an **explicit path** (user-triggered refresh, force-reload), the explicit path **SHOULD** propagate errors to the caller rather than silently degrading.
+
+**Why**: The caller needs the failure signal to communicate status accurately to the user. If both paths silently return empty data, the UI cannot distinguish "no data exists" from "upstream failed."
+
+**Example — cache with dual paths**:
+```typescript
+class IssueCache {
+  // Best-effort path: serve stale data on failure
+  async get(key: string): Promise<Data[]> {
+    try {
+      return await this.fetch(key);
+    } catch {
+      // Upstream failure during background polling is expected; serving the
+      // last-known cached value keeps the UI populated without crashing.
+      return this.getCached(key) ?? [];
+    }
+  }
+
+  // Explicit path: propagate errors so caller can report failure
+  async forceRefresh(key: string): Promise<Data[]> {
+    return await this.fetch(key); // throws on failure
+  }
+}
+```
+
+The caller of `forceRefresh` can then return `{ stale: true, staleReason: "upstream_failed" }` to the client, enabling the UI to show a meaningful stale-data banner instead of silently displaying empty results.
+
 ---
 
 ## Quick Reference Checklist

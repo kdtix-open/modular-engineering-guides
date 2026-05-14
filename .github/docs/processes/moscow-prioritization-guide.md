@@ -720,6 +720,17 @@ moscow_sprint = "Won't" AND labels = "revisit-q2"
 ✅ **Maintain contingency**: Must ≤60% of capacity  
 ✅ **Document Won't**: Time-bound and specify revisit criteria  
 
+### Technical Debt Discovered During Execution
+
+Technical debt found during implementation is classified using MoSCoW, not deferred by default:
+
+- **Must**: Debt that directly affects the quality, testability, or correctness of the work in progress. Pre-existing test failures, env isolation bugs, silent error swallowing in the active code path — these are Must-haves for the current increment because they undermine confidence in the deliverable.
+- **Should**: Debt that is adjacent to the current work but does not block it. Coverage gaps in related test suites, missing log lines in utility functions outside the hot path — important, tracked for the next increment.
+- **Could**: Debt that improves the codebase but has no direct impact on the current deliverable. Style improvements, comment quality, naming conventions in legacy code.
+- **Won't (this time)**: Debt that requires a separate design decision or larger refactor. Must be time-bounded and tracked as a backlog item — never dismissed without a remediation ticket.
+
+Technical debt is **never** labeled "Acceptable" or "By Design" as a way to avoid remediation. Every finding is either fixed now or explicitly queued with a timeline.
+
 ### Execution
 
 ✅ **Protect Musts**: Don't let them slip (they define success)  

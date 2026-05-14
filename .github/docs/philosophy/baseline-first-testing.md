@@ -185,6 +185,44 @@ pytest  # ← Verify their environment matches baseline
 # Ensures setup is correct
 ```
 
+### 6. Multi-Tool Projects
+
+Many projects have multiple quality gates beyond the primary test suite. **Baseline includes all quality gates defined in the project**, not just unit tests.
+
+**Record every gate**:
+```bash
+# Unit/integration tests
+npm test                                    # ← 58 passed, 0 failed
+
+# Lint
+npm run lint                                # ← Clean
+
+# Type check (may have multiple configs)
+npx tsc --noEmit                            # ← Clean
+npx tsc -p tsconfig.server.json --noEmit    # ← Clean
+
+# E2E tests (if applicable)
+npx playwright test                         # ← 12 passed, 2 skipped
+
+# Security scan
+npm audit                                   # ← 0 high/critical
+```
+
+**Document as a table**:
+```markdown
+## Baseline (2026-04-12, feature/new-feature)
+
+| Gate                     | Result                  |
+|--------------------------|-------------------------|
+| Unit tests (`npm test`)  | 58 passed, 0 failed     |
+| Lint (`npm run lint`)    | Clean                   |
+| TypeCheck (client+server)| Clean                   |
+| E2E (`playwright test`)  | 12 passed, 2 skipped    |
+| Security (`npm audit`)   | 0 high/critical         |
+```
+
+A regression in **any** gate — not just the primary test suite — counts as a baseline violation and must be investigated before merging.
+
 ---
 
 ## Baseline Documentation

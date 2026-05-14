@@ -86,6 +86,7 @@
 - Document deviations or unexpected behavior
 - Take screenshots/videos if helpful
 - Record timing for performance-sensitive operations
+- Capture a short markdown artifact summary that records the goal, actions taken, links to evidence, result, and improvement opportunities
 - Celebrate bugs found! 🎉
 
 ### Step 4: Document Results
@@ -448,6 +449,37 @@
 - [ ] **Update documentation** (if behavior changed)
 - [ ] **Get sign-off** (stakeholder approval)
 - [ ] **Archive results** (for future reference)
+
+---
+
+## Playwright MCP for Interactive UAT
+
+When a Playwright MCP server is available (e.g. `user-Playwright` in Cursor, or the `@playwright/mcp` package), UAT scenarios **MAY** be executed interactively through MCP browser tools instead of or in addition to manual browser testing.
+
+### Available MCP Actions for UAT
+
+- `browser_navigate` — open the target URL (local Docker or public Cloudflare surface)
+- `browser_snapshot` — capture the accessibility tree to verify element presence, labels, and structure
+- `browser_take_screenshot` — capture a visual screenshot as UAT evidence
+- `browser_click` — interact with buttons, tabs, links using refs from the snapshot
+- `browser_wait_for` — wait for text or elements to appear after an action
+- `browser_network_requests` — verify API calls (e.g. confirm `GET /api/operations` fires at 6s intervals, `POST /api/operations/refresh` fires on button click)
+- `browser_console_messages` — check for client-side errors during the scenario
+
+### UAT Evidence from MCP Sessions
+
+Screenshots and accessibility snapshots captured during an MCP session serve as UAT evidence. Include them in the UAT report alongside:
+
+- The scenario goal and steps executed
+- Network request log showing API contract compliance
+- Console error log (should be empty for a passing scenario)
+- Before/after screenshots for state-change verifications (e.g. stale-data banner appearing/disappearing)
+
+### When to Use MCP vs Manual
+
+- **Use MCP** for repeatable, assertion-heavy scenarios where you need to verify specific elements, network requests, or state transitions programmatically.
+- **Use manual browser testing** for exploratory UAT, visual design review, and scenarios that require human judgment about UX quality.
+- **Use both** when the scenario benefits from programmatic verification (MCP) followed by visual sign-off (manual).
 
 ---
 

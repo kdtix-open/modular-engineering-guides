@@ -173,6 +173,7 @@ snyk test
 - [ ] **No secrets** (no API keys, passwords)
 - [ ] **Functions < 50 lines** (refactor if longer)
 - [ ] **Clear variable names** (no `x`, `temp`, `data`)
+- [ ] **No silent catch blocks** (every `catch` must log, re-throw, or carry a justification comment — see [Observability & Logging](observability-and-logging.md#error-handling-and-catch-block-observability))
 
 **Automated checks**:
 ```bash

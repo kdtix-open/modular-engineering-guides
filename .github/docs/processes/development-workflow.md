@@ -350,14 +350,17 @@ def test_user_invalid_email():
 
 ### Pre-Commit Checklist
 
-- [ ] **All tests pass**: `pytest -v` (100% pass rate)
-- [ ] **Lint clean**: `ruff check` (zero warnings)
-- [ ] **Format clean**: `ruff format --check` (zero changes)
-- [ ] **Type check clean**: `mypy` (zero errors)
-- [ ] **Security scan clean**: `pip-audit` (no critical/high)
+- [ ] **All tests pass**: `pytest -v` / `npm test` (100% pass rate, no regressions vs. baseline)
+- [ ] **Lint clean**: `ruff check` / `eslint` (zero warnings)
+- [ ] **Format clean**: `ruff format --check` / `prettier --check` (zero changes)
+- [ ] **Type check clean**: `mypy` / `tsc --noEmit` (zero errors, all configs)
+- [ ] **Security scan clean**: `pip-audit` / `npm audit` (no critical/high)
 - [ ] **Pre-commit hooks pass**: `pre-commit run --all-files`
 - [ ] **No debug code**: No `print()`, `console.log()`, `debugger` statements
+- [ ] **No silent catch blocks**: Every `catch` must log, re-throw, or carry a justification comment
 - [ ] **No TODOs**: All TODOs addressed or documented as tech debt
+- [ ] **Skipped tests documented**: Any `test.skip` has a tracked remediation path
+- [ ] **Coverage delta documented**: PR description includes baseline comparison
 - [ ] **Git status clean**: Only intended files staged
 
 ### Running Pre-Commit

@@ -28,6 +28,39 @@ Playwright UI testing extends TDD to the user interface layer:
 ✅ **Auto-wait**: Smart waiting for elements (reduces flaky tests)  
 ✅ **Cross-platform**: Works on Windows, Linux, macOS  
 
+### Shared Live UAT Workflow
+
+When a team needs the exact browser session used by the human tester to also be the one Playwright records and inspects, use a shared live-session workflow instead of a parallel smoke test.
+
+**Recommended loop**:
+
+1. Start the app under test.
+2. Launch the shared browser session:
+   ```bash
+   npm run uat:live
+   ```
+3. Have the human tester use that Playwright-managed Chrome window for the UAT steps.
+4. Between steps, capture an observation from the same session:
+   ```bash
+   npm run uat:observe -- --label step-1
+   ```
+5. When pausing or finishing, stop the session cleanly:
+   ```bash
+   npm run uat:stop
+   ```
+
+**Artifacts to keep**:
+- video of the exact human-driven session
+- Playwright trace for replay/debugging
+- screenshots and JSON summaries from `uat:observe`
+- per-test `summary.md` files in `output/playwright/artifacts/<test>/` describing the objective, actions taken, artifacts, results, and improvement opportunities
+- console, page-error, request-failure, and UI-event logs
+
+**Why this matters**:
+- UX feedback matches the exact browser state being reviewed
+- technical debt discovered during UAT becomes reproducible evidence
+- the same artifacts can seed future regression tests and TDD work
+
 ### When to Use Playwright
 
 **✅ Use Playwright for**:
@@ -41,6 +74,20 @@ Playwright UI testing extends TDD to the user interface layer:
 - Backend API testing (use requests/fetch)
 - Unit testing (use pytest/jest)
 - Performance testing (use lighthouse/k6)
+
+### Artifact Summary Expectation
+
+Each repo-owned Playwright scenario should leave behind a readable markdown summary in its artifact folder:
+
+- `output/playwright/artifacts/<test>/summary.md`
+
+That summary should capture:
+
+- the scenario objective
+- the user-visible actions taken during the test
+- links to screenshots, video, trace, and log artifacts that were produced
+- the final result (`passed`, `failed`, or other Playwright status)
+- any opportunities for improvement discovered during the run
 
 ---
 

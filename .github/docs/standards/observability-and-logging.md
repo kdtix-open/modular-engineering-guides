@@ -211,12 +211,49 @@ Add to the UAT scenario "Actual Results" section when logs are relevant:
 
 ---
 
+## Error Handling and Catch Block Observability
+
+Every `catch` block in production code **MUST** satisfy at least one of these conditions:
+
+1. **Re-throw** the error (let the caller handle it).
+2. **Emit a structured log** at `debug` level or higher with the error message and relevant context (e.g. the operation that failed, the input that triggered it, whether cached data was available as a fallback).
+3. **Carry a justification comment** that explicitly explains why the error is suppressed and names the future remediation path (e.g. "best-effort cleanup — will gain structured logging when this helper receives a logger parameter").
+
+Empty `catch` blocks and `catch` blocks with only a generic comment (e.g. `// ignore`) are **not acceptable** in new code.
+
+**Why**: Silent `catch` blocks create invisible walls during root cause analysis. Multiple silent failures can compound — the dashboard shows an empty state that *looks* correct but is actually a multi-point failure. No amount of `--verbose 3 --debug 3` will reveal what happened because nothing was logged.
+
+**Example — wrong**:
+```typescript
+try {
+  entries = await fs.readdir(directory, { withFileTypes: true });
+} catch {
+  return;
+}
+```
+
+**Example — correct**:
+```typescript
+try {
+  entries = await fs.readdir(directory, { withFileTypes: true });
+} catch (error) {
+  logger?.debug("Skipping unreadable directory during project discovery.", {
+    directory,
+    error: error instanceof Error ? error.message : String(error)
+  });
+  return;
+}
+```
+
+---
+
 ## Pre-Commit Checklist Additions
 
 - [ ] `logs/` is in `.gitignore`
 - [ ] `logs/` directory is created automatically at startup (no manual step required)
 - [ ] `--verbose` and `--debug` CLI flags (and `VERBOSE`/`DEBUG` env vars) are implemented
 - [ ] Structured logger is used throughout (no bare `print()` for operational output)
+- [ ] No new silent `catch` blocks introduced without structured logging or explicit justification comment
 
 ---
 
