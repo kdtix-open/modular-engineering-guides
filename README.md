@@ -14,8 +14,8 @@ A shared guide library of engineering principles, processes, and standards for A
 │   └── security.instructions.md    ← Path-scoped: security standards (all files)
 ├── docs/
 │   ├── philosophy/                  ← 6 core engineering philosophy guides
-│   ├── processes/                   ← 9 process guides (workflow, spike, UAT, etc.)
-│   ├── standards/                   ← 3 code and test quality standards
+│   ├── processes/                   ← 10 process guides (workflow, spike, UAT, etc.)
+│   ├── standards/                   ← 5 engineering standards
 │   └── examples/                    ← Real-world success stories and templates
 └── skills/                          ← Reusable agent skill definitions
 AGENTS.md                            ← GitHub Copilot Coding Agent instructions
@@ -88,6 +88,7 @@ GitHub Copilot supports four instruction surfaces. Use them together for maximum
 | `documentation-tracking-guide.md` | Documentation and ticket tracking |
 | `playwright-ui-ux-testing.md` | UI/UX and accessibility testing |
 | `azure-ai-agent-guide.md` | Azure AI Agent patterns |
+| `release-scaffolding-guide.md` | Issue intake, changelog, and release automation scaffolding |
 
 ### Standards (`.github/docs/standards/`)
 
@@ -97,6 +98,7 @@ GitHub Copilot supports four instruction surfaces. Use them together for maximum
 | `testing-requirements.md` | Coverage minimums and test quality rules |
 | `pre-commit-verification.md` | Phase 7 pre-commit checklist |
 | `observability-and-logging.md` | Log levels, CLI flags, and what to log per level |
+| `configuration-and-constants.md` | Magic numbers, hidden config, typed config, and documented defaults |
 
 ### Examples (`.github/docs/examples/`)
 

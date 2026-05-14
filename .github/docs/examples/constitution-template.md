@@ -25,9 +25,12 @@
        .github/docs/processes/documentation-tracking-guide.md
        .github/docs/processes/playwright-ui-ux-testing.md
        .github/docs/processes/azure-ai-agent-guide.md
+       .github/docs/processes/release-scaffolding-guide.md
        .github/docs/standards/code-quality-standards.md
        .github/docs/standards/testing-requirements.md
        .github/docs/standards/pre-commit-verification.md
+       .github/docs/standards/observability-and-logging.md
+       .github/docs/standards/configuration-and-constants.md
        .github/docs/examples/constitution-template.md
        .github/docs/examples/confluence-attachments-success-story.md
 
@@ -247,7 +250,10 @@ The guide library at `.github/docs/` is the authoritative source for detailed pr
 | Documentation & tracking | `.github/docs/processes/documentation-tracking-guide.md` |
 | UI/UX & accessibility testing | `.github/docs/processes/playwright-ui-ux-testing.md` |
 | Azure AI Agent patterns | `.github/docs/processes/azure-ai-agent-guide.md` |
-| Code & test quality | `.github/docs/standards/` (3 guides) |
+| Release scaffolding | `.github/docs/processes/release-scaffolding-guide.md` |
+| Code, config & test quality | `.github/docs/standards/` (5 guides) |
+| Observability & logging | `.github/docs/standards/observability-and-logging.md` |
+| Configuration & constants | `.github/docs/standards/configuration-and-constants.md` |
 | Real-world example | `.github/docs/examples/confluence-attachments-success-story.md` |
 
 Amendments to this Constitution require: written justification for the change; team review and approval; and a migration plan for any existing code that would fall out of compliance.
