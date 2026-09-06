@@ -13,7 +13,7 @@ A shared guide library of engineering principles, processes, and standards for A
 │   ├── testing.instructions.md      ← Path-scoped: test file standards
 │   └── security.instructions.md    ← Path-scoped: security standards (all files)
 ├── docs/
-│   ├── philosophy/                  ← 6 core engineering philosophy guides
+│   ├── philosophy/                  ← 8 core engineering philosophy guides
 │   ├── processes/                   ← 10 process guides (workflow, spike, UAT, etc.)
 │   ├── standards/                   ← 5 engineering standards
 │   └── examples/                    ← Real-world success stories and templates
@@ -74,6 +74,7 @@ GitHub Copilot supports four instruction surfaces. Use them together for maximum
 | `baseline-first-testing.md` | Record the baseline before any change |
 | `independent-verification.md` | Fresh-eyes review before merge |
 | `security-vulnerability-management.md` | Security is not a separate phase |
+| [self-healing-as-a-class.md](.github/docs/philosophy/self-healing-as-a-class.md) | Detect, diagnose, remediate, and capture reusable prevention |
 
 ### Processes (`.github/docs/processes/`)
 
