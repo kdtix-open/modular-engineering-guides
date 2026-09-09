@@ -969,6 +969,51 @@ See [Alternative Setup](#alternative-setup) below.
 
 ---
 
+## Docker Deployment Verification
+
+When the project uses Docker Compose for deployment (local or tunneled to a public origin), verification after deployment **MUST** cover both the local endpoint and the public endpoint.
+
+### Verification Steps
+
+```bash
+# 1. Deploy the stack
+npm run docker:deploy:live
+
+# 2. Verify the local endpoint immediately
+curl -s http://localhost:8080/tools/repo-orchestrator/api/health
+# Expected: {"ok":true}
+
+# 3. Wait for tunnel propagation (15-30 seconds for Cloudflare)
+sleep 15
+
+# 4. Verify the public endpoint
+curl -s https://dev.projectit.ai/tools/repo-orchestrator/api/health
+# Expected: {"ok":true}
+# Note: May return 502 for the first 15-30 seconds while the tunnel establishes
+```
+
+### Tunnel Propagation Timing
+
+Cloudflare tunnels typically take 10-30 seconds to begin routing after a fresh deploy. During this window:
+
+- **Local endpoint** (`http://localhost:8080/...`) is immediately available
+- **Public endpoint** (`https://dev.projectit.ai/...`) may return `502 Bad Gateway`
+- **API endpoints** often stabilize before HTML pages (Cloudflare edge may cache the 502 HTML response)
+
+**Best practice**: Use the local endpoint for immediate development verification. Use the public endpoint for UAT after the tunnel has stabilized. If the public endpoint returns 502 after 30 seconds, check `docker compose logs app` for startup errors.
+
+### Use `--skip-public-check` for Speed
+
+When iterating quickly during development, skip the public health check to avoid the tunnel wait:
+
+```bash
+npm run docker:deploy:live -- --skip-public-check
+```
+
+Only skip this for development iterations — UAT and pre-merge verification **MUST** include the public endpoint check.
+
+---
+
 ## Related Guides
 
 - **[Cross-Platform Considerations](cross-platform-considerations.md)**: Devcontainers solve most cross-platform issues automatically

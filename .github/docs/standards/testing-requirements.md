@@ -244,6 +244,66 @@ def test_stuff():
 - ❌ **Real dependencies**: Slow, requires external services
 - ❌ **Unclear assertion**: What behavior is validated?
 
+### Environment Variable Isolation
+
+Tests that verify environment-variable-dependent behavior **MUST** explicitly set or delete the relevant variables before the test and restore them afterward. Tests **MUST NOT** rely on the presence or absence of host environment variables.
+
+**Why**: A test that reads `process.env.API_KEY` without setting it will pass on CI (where the key is absent) but fail on a developer's machine (where the real key is set), or vice versa. This is the most common source of "works on my machine" test failures.
+
+**✅ Correct — save, delete, restore**:
+```python
+def test_missing_api_key_raises_error():
+    saved = os.environ.pop("API_KEY", None)
+    try:
+        with pytest.raises(ValueError):
+            connect()
+    finally:
+        if saved is not None:
+            os.environ["API_KEY"] = saved
+```
+
+```typescript
+it("throws when API key is missing", () => {
+  const saved = process.env.API_KEY;
+  delete process.env.API_KEY;
+
+  try {
+    expect(() => connect()).toThrow("API_KEY is required");
+  } finally {
+    if (saved !== undefined) {
+      process.env.API_KEY = saved;
+    }
+  }
+});
+```
+
+**❌ Wrong — relies on host environment**:
+```typescript
+it("throws when API key is missing", () => {
+  // Passes on CI, fails on developer machines with API_KEY set
+  expect(() => connect()).toThrow("API_KEY is required");
+});
+```
+
+Use `afterEach` restore patterns for suites that modify multiple variables. Prefer `try/finally` for single-test isolation.
+
+### Test Coverage Debt
+
+Conditionally skipped tests (`test.skip`, `describe.skip`, environment guards like `test.skip(!isExternalRun())`) represent **test coverage debt**. When a test only runs in one environment, the scenarios it covers are unvalidated in all other environments.
+
+**Rules**:
+- When a test is conditionally skipped, a local equivalent **SHOULD** be created so the coverage gap does not persist across CI runs.
+- Skipped tests **MUST** be tracked as technical debt with a documented remediation path.
+- `test.skip` without a condition or comment is **not acceptable** — every skip must explain why and when it will be resolved.
+
+**Example — coverage debt**:
+```typescript
+// This test only runs against the Cloudflare surface — local CI never validates it
+test.skip(!isExternalPlaywrightRun(), "Requires Cloudflare surface");
+```
+
+**Remediation**: Create a local equivalent that runs the same assertions against `localhost`, using fixture data instead of live state.
+
 ---
 
 ## Test Patterns
